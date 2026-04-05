@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Atelier Pescuit Copii – Programări</title>
+  <style>
+    :root{
+      --bg:#f5f7fb; --card:#ffffff; --soft:#eef3f8; --text:#111827; --muted:#64748b; --border:rgba(15,23,42,.08);
+      --shadow:0 14px 40px rgba(15,23,42,.08); --radius:24px; --radius2:18px;
+      --primary:#2563eb; --primary2:#1d4ed8; --danger:#e74c3c; --ok:#2ecc71; --warn:#f1c40f; --orange:#e67e22;
+      --btnh:50px; --headerbg:rgba(245,247,251,.85);
+    }
+    [data-theme="dark"]{
+      --bg:#0b1220; --card:#111827; --soft:#182233; --text:#f8fafc; --muted:#94a3b8; --border:rgba(255,255,255,.08);
+      --shadow:0 14px 40px rgba(0,0,0,.24); --primary:#60a5fa; --primary2:#3b82f6; --headerbg:rgba(11,18,32,.78);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      background:linear-gradient(180deg,var(--bg) 0%, color-mix(in srgb,var(--bg) 92%, white) 100%);
+      color:var(--text); -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; overflow-x:hidden;
+    }
+    .hidden{display:none!important}
+    .app{min-height:100vh}
+    .wrap{max-width:1320px;margin:0 auto;padding:14px 14px 120px}
+    .topbar{
+      position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:var(--headerbg);
+      border-bottom:1px solid var(--border);
+    }
+    .topbar-in{
+      max-width:1320px;margin:0 auto;padding:12px 14px;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:48px;height:48px;border-radius:18px;display:grid;place-items:center;color:#fff;font-size:24px;
+      background:linear-gradient(135deg,var(--primary),var(--primary2)); box-shadow:0 12px 30px rgba(37,99,235,.25);
+    }
+    .title{font-size:1.15rem;font-weight:800}
+    .subtitle{color:var(--muted);font-size:.92rem;margin-top:4px}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{
+      min-height:var(--btnh);border:0;border-radius:18px;padding:0 16px;background:var(--soft);color:var(--text);font-weight:800;
+      cursor:pointer;transition:transform .12s ease,opacity .2s ease,background .2s ease; position:relative;overflow:hidden;
+      border:1px solid var(--border); -webkit-tap-highlight-color:transparent;
+    }
+    .btn:active{transform:scale(.98)}
+    .btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:white;border:0}
+    .btn.danger{background:rgba(231,76,60,.1);color:var(--danger);border-color:rgba(231,76,60,.18)}
+    .btn.success{background:rgba(46,204,113,.12);color:#0e8a49;border-color:rgba(46,204,113,.22)}
+    .btn:disabled{opacity:.65;cursor:not-allowed;background:#94a3b8;color:white;border:0}
+    .mini{min-height:42px;padding:0 12px;font-size:.9rem}
+    .input,.select,.textarea{
+      width:100%;min-height:50px;border-radius:18px;border:1px solid var(--border);background:var(--soft);
+      color:var(--text);padding:14px 16px;font-size:1rem;outline:none;
+    }
+    .textarea{min-height:90px;resize:vertical}
+    .input:focus,.select:focus,.textarea:focus{box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 18%, transparent);border-color:color-mix(in srgb,var(--primary) 55%, transparent)}
+    .invalid{border-color:rgba(231,76,60,.8)!important;box-shadow:0 0 0 4px rgba(231,76,60,.12)!important}
+    .auth{min-height:100vh;display:grid;place-items:center;padding:20px}
+    .auth-card{
+      width:min(100%,430px);background:var(--card);border:1px solid var(--border);border-radius:32px;box-shadow:var(--shadow);padding:22px;
+    }
+    .field{margin-top:14px}
+    .field label{display:block;margin-bottom:8px;font-weight:700;font-size:.92rem}
+    .check{
+      display:flex;gap:10px;align-items:center;padding:14px;border-radius:18px;background:var(--soft);border:1px solid var(--border);margin-top:12px;
+    }
+    .check input{width:20px;height:20px}
+    .hint{font-size:.78rem;color:var(--muted)}
+    .error{color:var(--danger)}
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+    .stat,.toolbar,.day,.month-cell,.session,.booking{
+      background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:24px;
+    }
+    .stat{padding:14px;min-height:100px}
+    .stat .l{font-size:.8rem;color:var(--muted);margin-bottom:8px}
+    .stat .v{font-size:1.35rem;font-weight:900}
+    .stat .s{font-size:.82rem;color:var(--muted);margin-top:6px}
+    .toolbars{display:grid;gap:10px;margin-bottom:14px}
+    .toolbar{padding:12px}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .row + .row{margin-top:10px}
+    .seg{display:inline-flex;background:var(--soft);border:1px solid var(--border);padding:4px;border-radius:18px;gap:4px}
+    .seg button{min-height:42px;padding:0 14px;border:0;border-radius:14px;background:transparent;color:var(--text);font-weight:800}
+    .seg button.active{background:var(--card);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+    .range{font-size:1rem;font-weight:800}
+    .week-grid{display:grid;gap:12px}
+    .day{padding:14px;opacity:1;transform:translateY(0);transition:opacity .22s ease,transform .22s ease}
+    .day.past{opacity:.9}
+    .day-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}
+    .day-name{font-size:1.05rem;font-weight:900}
+    .day-date{font-size:.84rem;color:var(--muted);margin-top:4px}
+    .badge{padding:8px 12px;border-radius:999px;background:var(--soft);font-size:.8rem;font-weight:800;color:var(--muted)}
+    .session-list{display:grid;gap:12px}
+    .session{
+      padding:14px;background:linear-gradient(180deg,color-mix(in srgb,var(--card) 92%, transparent), var(--soft));
+      position:relative; overflow:hidden;
+    }
+    .session.full{background:linear-gradient(180deg,color-mix(in srgb,var(--soft) 92%, #d1d5db), color-mix(in srgb,var(--soft) 100%, #e5e7eb))}
+    .session-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}
+    .stime{font-size:1rem;font-weight:900}
+    .smeta{font-size:.82rem;color:var(--muted);margin-top:4px}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;background:var(--soft);font-size:.78rem;font-weight:900}
+    .chip.discount{background:rgba(241,196,15,.16);color:#946c00}
+    .chip.present{background:rgba(46,204,113,.14);color:#11804a}
+    .chip.absent{background:rgba(148,163,184,.18);color:var(--muted)}
+    .capacity{position:relative}
+    .bar{height:12px;border-radius:999px;background:rgba(148,163,184,.18);overflow:hidden}
+    .bar > span{display:block;height:100%;width:0;transition:width .35s ease}
+    .cap-text{font-size:.82rem;color:var(--muted);font-weight:800;margin-top:8px}
+    .tooltip{
+      position:absolute;left:0;bottom:calc(100% + 8px);background:var(--text);color:var(--card);padding:8px 10px;border-radius:12px;
+      font-size:.76rem;opacity:0;pointer-events:none;transform:translateY(4px);transition:.18s ease;white-space:nowrap;z-index:5;
+    }
+    .capacity.show .tooltip{opacity:1;transform:translateY(0)}
+    .session-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .booking-list{display:grid;gap:10px;margin-top:12px}
+    .booking{padding:12px;animation:fadeIn .2s ease}
+    .booking.removing{animation:fadeOut .22s ease forwards}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    @keyframes fadeOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(8px)}}
+    .booking-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+    .cname{font-size:.98rem;font-weight:900}
+    .cmeta{font-size:.84rem;color:var(--muted);margin-top:4px}
+    .tiny-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+    .notes-box{display:grid;gap:8px;margin-top:10px}
+    .tag{border:1px solid var(--border);background:var(--soft);color:var(--text);padding:8px 10px;border-radius:999px;font-size:.78rem;cursor:pointer}
+    .month{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+    .month-cell{min-height:116px;padding:10px;display:flex;flex-direction:column;gap:8px}
+    .month-cell.outside{opacity:.45}
+    .mdate{font-weight:900}
+    .mini-list{font-size:.75rem;color:var(--muted);display:grid;gap:4px}
+    .mini-bar{height:8px;border-radius:999px;background:rgba(148,163,184,.18);overflow:hidden}
+    .mini-bar span{display:block;height:100%}
+    .modal-bg{
+      position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;align-items:flex-end;justify-content:center;z-index:100;padding:14px;
+    }
+    .modal-bg.show{display:flex}
+    .modal{
+      width:min(100%,760px);max-height:min(92vh,900px);overflow:auto;background:var(--card);border:1px solid var(--border);
+      border-radius:28px 28px 20px 20px;box-shadow:var(--shadow);padding:18px;animation:up .18s ease;
+    }
+    @keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+    .grid2{display:grid;gap:10px}
+    .toast-wrap{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom, 0px));display:grid;gap:8px;z-index:200;pointer-events:none}
+    .toast{
+      pointer-events:auto;padding:14px 16px;border-radius:18px;background:color-mix(in srgb,var(--card) 92%, var(--soft));border:1px solid var(--border);
+      box-shadow:var(--shadow);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;animation:tin .18s ease;
+    }
+    .toast.rem{animation:tout .18s ease forwards}
+    @keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    @keyframes tout{from{opacity:1;transform:none}to{opacity:0;transform:translateY(8px)}}
+    .print-only{display:none}
+    @media (min-width:768px){
+      .stats{grid-template-columns:repeat(4,1fr)}
+      .toolbars{grid-template-columns:1.2fr 1fr}
+      .week-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .modal-bg{align-items:center}
+      .modal{border-radius:28px}
+      .grid2{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (min-width:1120px){.week-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media (min-width:1360px){.week-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+    @media (max-width:899px){.month{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:640px){
+      .month{grid-template-columns:1fr}
+      .topbar-in{align-items:flex-start}
+      .actions{width:100%}
+      .grid2{grid-template-columns:1fr}
+    }
+    @media print{
+      body{background:#fff}
+      .topbar,.toolbars,.toast-wrap,.modal-bg,#authView,.no-print{display:none!important}
+      .print-only{display:block}
+      .wrap{max-width:none;padding:0}
+      .day,.session,.stat,.month-cell,.booking{box-shadow:none;border:1px solid #ddd}
+      .week-grid{display:block}
+      .day{break-inside:avoid;margin-bottom:12px}
+      .stats{grid-template-columns:repeat(4,1fr)}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <section id="authView" class="auth">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="logo">🎣</div>
+        <div>
+          <div class="title">Atelier Pescuit Copii</div>
+          <div class="subtitle">Autentificare administrator</div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="loginPassword">Parolă</label>
+        <input id="loginPassword" class="input" type="password" placeholder="Introdu parola" autocomplete="current-password">
+      </div>
+      <label class="check">
+        <input id="rememberMe" type="checkbox">
+        <div>
+          <div><strong>Remember me</strong></div>
+          <div class="hint">Păstrează sesiunea activă 7 zile</div>
+        </div>
+      </label>
+      <div class="field">
+        <button id="loginBtn" class="btn primary" style="width:100%">Intră în aplicație</button>
+      </div>
+      <div id="loginError" class="hint error" style="margin-top:10px"></div>
+    </div>
+  </section>
+
+  <section id="appView" class="hidden">
+    <header class="topbar no-print">
+      <div class="topbar-in">
+        <div class="brand">
+          <div class="logo">🎣</div>
+          <div>
+            <div class="title">Programări atelier</div>
+            <div class="subtitle">Administrare mobilă • capacitate 12 copii / sesiune</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="themeBtn" class="btn mini">🌙 Mod</button>
+          <button id="csvBtn" class="btn mini">Export CSV</button>
+          <button id="pdfBtn" class="btn mini">Export PDF azi</button>
+          <button id="backupBtn" class="btn mini">Backup JSON</button>
+          <button id="importBtn" class="btn mini">Import</button>
+          <button id="resetBtn" class="btn mini danger">Reset</button>
+          <button id="logoutBtn" class="btn mini">Deconectare</button>
+          <input id="importFile" type="file" accept="application/json" class="hidden">
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section id="stats" class="stats"></section>
+
+      <section class="toolbars">
+        <div class="toolbar no-print">
+          <div class="row">
+            <div class="seg">
+              <button id="weekBtn" class="active">Săptămână</button>
+              <button id="monthBtn">Lună</button>
+            </div>
+            <button id="prevBtn" class="btn mini">←</button>
+            <button id="todayBtn" class="btn mini">Astăzi</button>
+            <button id="nextBtn" class="btn mini">→</button>
+          </div>
+          <div class="row"><div id="rangeLabel" class="range"></div></div>
+        </div>
+
+        <div class="toolbar no-print">
+          <div class="row">
+            <button id="addTodayBtn" class="btn primary">+ Adaugă azi</button>
+            <button id="reportBtn" class="btn">Raport zi</button>
+          </div>
+          <div class="row">
+            <div class="hint">Preluare copii: <strong>cu 30 min înainte</strong> • Predare: <strong>cu 30 min după</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="printHeader" class="print-only"></section>
+      <section id="mount"></section>
+    </main>
+  </section>
+</div>
+
+<div id="modalBg" class="modal-bg"></div>
+<div id="toasts" class="toast-wrap"></div>
+
+<script>
+(() => {
+'use strict';
+
+const PASS = 'pescuit2026';
+const STORAGE = 'atelier_programari_kids_v1';
+const AUTH = 'atelier_programari_auth_v1';
+const THEME = 'atelier_programari_theme_v1';
+const CAPACITY = 12;
+const FULL = 200;
+const HALF = 100;
+const QUICK_NOTES = [
+  'Alergic la pește',
+  'Folosește mulinetă mică',
+  'Necesită ajutor extra',
+  'Atenție, fuge de viermi',
+  'Cu dizabilități locomotorii'
+];
+
+let state = loadState();
+let viewMode = state.settings.viewMode || 'week';
+let currentDate = parseISODateSafe(state.settings.currentDate) || new Date();
+let lastLowWarnings = new Set();
+let lastFullWarnings = new Set();
+let touchStartX = null;
+
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+const authView = $('#authView');
+const appView = $('#appView');
+const loginPassword = $('#loginPassword');
+const loginBtn = $('#loginBtn');
+const loginError = $('#loginError');
+const rememberMe = $('#rememberMe');
+const logoutBtn = $('#logoutBtn');
+const weekBtn = $('#weekBtn');
+const monthBtn = $('#monthBtn');
+const prevBtn = $('#prevBtn');
+const nextBtn = $('#nextBtn');
+const todayBtn = $('#todayBtn');
+const addTodayBtn = $('#addTodayBtn');
+const reportBtn = $('#reportBtn');
+const rangeLabel = $('#rangeLabel');
+const mount = $('#mount');
+const statsEl = $('#stats');
+const modalBg = $('#modalBg');
+const toasts = $('#toasts');
+const themeBtn = $('#themeBtn');
+const csvBtn = $('#csvBtn');
+const pdfBtn = $('#pdfBtn');
+const backupBtn = $('#backupBtn');
+const importBtn = $('#importBtn');
+const importFile = $('#importFile');
+const resetBtn = $('#resetBtn');
+const printHeader = $('#printHeader');
+
+applyTheme(state.settings.theme || localStorage.getItem(THEME) || 'light');
+bootstrapDemoIfEmpty();
+bindGlobalEvents();
+checkAuth();
+
+function defaultState(){
+  return {
+    bookings:{},
+    waitlists:{},
+    attendanceHistory:[],
+    settings:{theme:'light',viewMode:'week',currentDate:new Date().toISOString()}
+  };
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE);
+    if(!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    return {
+      ...defaultState(),
+      ...parsed,
+      bookings: parsed.bookings || {},
+      waitlists: parsed.waitlists || {},
+      attendanceHistory: Array.isArray(parsed.attendanceHistory) ? parsed.attendanceHistory : [],
+      settings: {...defaultState().settings, ...(parsed.settings || {})}
+    };
+  }catch(e){
+    console.error(e);
+    return defaultState();
+  }
+}
+function saveState(){
+  try{
+    state.settings.viewMode = viewMode;
+    state.settings.currentDate = currentDate.toISOString();
+    localStorage.setItem(STORAGE, JSON.stringify(state));
+  }catch(e){
+    console.error(e);
+    toast('⚠️ Nu am putut salva local datele.');
+  }
+}
+function startOfDay(d){ const x = new Date(d); x.setHours(0,0,0,0); return x; }
+function addDays(d,n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+function startOfWeek(d){ const x=startOfDay(d); const day=(x.getDay()+6)%7; x.setDate(x.getDate()-day); return x; }
+function endOfWeek(d){ return addDays(startOfWeek(d),6); }
+function startOfMonth(d){ return new Date(d.getFullYear(), d.getMonth(), 1); }
+function parseISODateSafe(v){ const d = new Date(v); return Number.isNaN(d.getTime()) ? null : d; }
+function dateKey(d){ const x=startOfDay(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; }
+function keyToDate(k){ const [y,m,day] = String(k).split('-').map(Number); return new Date(y,(m||1)-1,day||1); }
+function fmtDate(d,o={}){ return new Intl.DateTimeFormat('ro-RO',o).format(d); }
+function money(n){ return new Intl.NumberFormat('ro-RO',{style:'currency',currency:'RON',maximumFractionDigits:0}).format(n); }
+function cap(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+function uid(){ return 'id_' + Math.random().toString(36).slice(2) + Date.now().toString(36); }
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function nowTime(){ const d = new Date(); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
+function normalizePhone(v){ return String(v||'').replace(/\s+/g,'').replace(/[^\d+]/g,''); }
+function validPhone(v){ return /^(\+40|0)7\d{8}$/.test(normalizePhone(v)); }
+function validEmail(v){ if(!v) return true; return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v).trim()); }
+function validAge(v){ const n = Number(v); return Number.isInteger(n) && n>=6 && n<=17; }
+function isPast(d){ return startOfDay(d) < startOfDay(new Date()); }
+function occupancyColor(count){
+  if(count <= 4) return '#2ecc71';
+  if(count <= 8) return '#f1c40f';
+  if(count <= 10) return '#e67e22';
+  return '#e74c3c';
+}
+function occupancyPct(count){ return Math.min(100, Math.round((count/CAPACITY)*100)); }
+function seasonSessions(d){
+  const m = d.getMonth()+1;
+  if([3,4,10].includes(m)) return ['09:00-12:00','13:00-16:00'];
+  if([5,6,7,8,9].includes(m)) return ['09:00-12:00','13:00-16:00','17:00-20:00'];
+  return ['09:00-12:00','13:00-16:00'];
+}
+function ensureDayContainers(dk, sessions){
+  state.bookings[dk] ||= {};
+  state.waitlists[dk] ||= {};
+  sessions.forEach(s => {
+    state.bookings[dk][s] ||= [];
+    state.waitlists[dk][s] ||= [];
+  });
+}
+function getBookings(dk,s){ return state.bookings?.[dk]?.[s] || []; }
+function getWaitlist(dk,s){ return state.waitlists?.[dk]?.[s] || []; }
+function addMinutes(hhmm, minutes){
+  const [h,m] = hhmm.split(':').map(Number);
+  const d = new Date(2000,0,1,h,m||0,0,0);
+  d.setMinutes(d.getMinutes()+minutes);
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+function appendNote(curr, next){
+  curr = String(curr||'').trim();
+  next = String(next||'').trim();
+  if(!next) return curr;
+  if(!curr) return next;
+  if(curr.includes(next)) return curr;
+  return curr + ' • ' + next;
+}
+function debounce(fn, ms=220){
+  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+function weekDates(base){
+  const s = startOfWeek(base);
+  return Array.from({length:7}, (_,i)=>addDays(s,i));
+}
+function monthCells(base){
+  const s = startOfMonth(base);
+  const first = startOfWeek(s);
+  return Array.from({length:35}, (_,i)=>addDays(first,i));
+}
+function createBooking(data){
+  return {
+    id: data.id || uid(),
+    childName: String(data.childName||'').trim(),
+    age: Number(data.age),
+    parentName: String(data.parentName||'').trim(),
+    phone: normalizePhone(data.phone),
+    email: String(data.email||'').trim(),
+    siblingFlag: !!data.siblingFlag,
+    discounted: !!data.discounted,
+    pricePaid: data.discounted ? HALF : FULL,
+    present: !!data.present,
+    presentAt: data.presentAt || '',
+    notes: String(data.notes||'').trim(),
+    createdAt: data.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+}
+function createWait(data){
+  return {
+    id: data.id || uid(),
+    childName: String(data.childName||'').trim(),
+    age: Number(data.age),
+    parentName: String(data.parentName||'').trim(),
+    phone: normalizePhone(data.phone),
+    email: String(data.email||'').trim(),
+    siblingFlag: !!data.siblingFlag,
+    discounted: !!data.discounted,
+    notes: String(data.notes||'').trim(),
+    createdAt: new Date().toISOString()
+  };
+}
+function previousAttendances(childName,parentName){
+  const c = String(childName).trim().toLowerCase();
+  const p = String(parentName).trim().toLowerCase();
+  const out = [];
+  Object.entries(state.bookings || {}).forEach(([dk, sessions]) => {
+    Object.entries(sessions || {}).forEach(([sk, arr]) => {
+      (arr||[]).forEach(b => {
+        if(b.present && String(b.childName).trim().toLowerCase()===c && String(b.parentName).trim().toLowerCase()===p){
+          out.push({dk, sk, at: b.presentAt || ''});
+        }
+      });
+    });
+  });
+  return out.sort((a,b) => keyToDate(b.dk)-keyToDate(a.dk)).slice(0,3);
+}
+function sameChildSameDayElsewhere(dk, sk, childName, parentName){
+  const c = String(childName).trim().toLowerCase();
+  const p = String(parentName).trim().toLowerCase();
+  const sessions = state.bookings?.[dk] || {};
+  return Object.entries(sessions).some(([sess, arr]) => sess !== sk && (arr||[]).some(b => String(b.childName).trim().toLowerCase()===c && String(b.parentName).trim().toLowerCase()===p));
+}
+function parentsForDay(dk, q=''){
+  const map = new Map();
+  Object.values(state.bookings?.[dk] || {}).forEach(arr => {
+    (arr||[]).forEach(b => {
+      const key = `${b.parentName}|${b.phone}`;
+      if(!map.has(key)) map.set(key, {parentName:b.parentName, phone:b.phone});
+    });
+  });
+  q = String(q).trim().toLowerCase();
+  return Array.from(map.values()).filter(x => !q || x.parentName.toLowerCase().includes(q));
+}
+
+function bootstrapDemoIfEmpty(){
+  if(Object.keys(state.bookings||{}).length) return;
+  const t = startOfDay(new Date());
+  const t1 = addDays(t,1);
+  const dk1 = dateKey(t), dk2 = dateKey(t1);
+  const s1 = seasonSessions(t), s2 = seasonSessions(t1);
+  ensureDayContainers(dk1, s1); ensureDayContainers(dk2, s2);
+  state.bookings[dk1][s1[0]].push(createBooking({childName:'Andrei Pop', age:9, parentName:'Maria Pop', phone:'0722123123', email:'maria@example.com', notes:'Folosește mulinetă mică', present:true, presentAt:nowTime(), discounted:false}));
+  if(s1[1]) state.bookings[dk1][s1[1]].push(createBooking({childName:'Elena Ionescu', age:11, parentName:'Cristina Ionescu', phone:'0744123456', email:'', notes:'', present:false, discounted:false}));
+  state.bookings[dk2][s2[0]].push(createBooking({childName:'Radu Dima', age:8, parentName:'Lucian Dima', phone:'0765123123', email:'lucian@example.com', notes:'Necesită ajutor extra', present:false, discounted:true}));
+  saveState();
+}
+
+function setAuth(remember){
+  const expires = Date.now() + 7*24*60*60*1000;
+  sessionStorage.setItem(AUTH, JSON.stringify({expires}));
+  if(remember) localStorage.setItem(AUTH, JSON.stringify({expires}));
+}
+function clearAuth(){
+  sessionStorage.removeItem(AUTH);
+  localStorage.removeItem(AUTH);
+}
+function hasAuth(){
+  const vals = [sessionStorage.getItem(AUTH), localStorage.getItem(AUTH)].filter(Boolean);
+  for(const v of vals){
+    try{
+      const x = JSON.parse(v);
+      if(x?.expires > Date.now()) return true;
+    }catch(e){}
+  }
+  return false;
+}
+function checkAuth(){
+  if(hasAuth()){
+    authView.classList.add('hidden');
+    appView.classList.remove('hidden');
+    render();
+  }else{
+    authView.classList.remove('hidden');
+    appView.classList.add('hidden');
+  }
+}
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  state.settings.theme = theme;
+  localStorage.setItem(THEME, theme);
+  if(themeBtn) themeBtn.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+}
+
+function bindGlobalEvents(){
+  loginBtn.addEventListener('click', handleLogin);
+  loginPassword.addEventListener('keydown', e => { if(e.key === 'Enter') handleLogin(); });
+  logoutBtn.addEventListener('click', () => { clearAuth(); checkAuth(); });
+  themeBtn.addEventListener('click', () => { applyTheme((state.settings.theme||'light')==='light' ? 'dark' : 'light'); saveAndRender(); });
+  weekBtn.addEventListener('click', () => { viewMode='week'; saveAndRender(); });
+  monthBtn.addEventListener('click', () => { viewMode='month'; saveAndRender(); });
+  prevBtn.addEventListener('click', () => { shiftView(-1); });
+  nextBtn.addEventListener('click', () => { shiftView(1); });
+  todayBtn.addEventListener('click', () => { currentDate = new Date(); saveAndRender(); });
+  addTodayBtn.addEventListener('click', () => openQuickAddForToday());
+  reportBtn.addEventListener('click', () => exportDayPrint(currentDate));
+  csvBtn.addEventListener('click', exportCSV);
+  pdfBtn.addEventListener('click', () => exportDayPrint(currentDate));
+  backupBtn.addEventListener('click', exportBackup);
+  importBtn.addEventListener('click', () => importFile.click());
+  importFile.addEventListener('change', importBackup);
+  resetBtn.addEventListener('click', resetAll);
+}
+function handleLogin(){
+  if(loginPassword.value === PASS){
+    loginError.textContent = '';
+    setAuth(rememberMe.checked);
+    checkAuth();
+  }else{
+    loginError.textContent = 'Parolă incorectă.';
+  }
+}
+function shiftView(delta){
+  if(viewMode === 'week') currentDate = addDays(currentDate, delta*7);
+  else currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth()+delta, 1);
+  saveAndRender();
+}
+function saveAndRender(){ saveState(); render(); }
+
+function render(){
+  renderStats();
+  renderToolbar();
+  renderCalendar();
+  detectCapacityEvents();
+}
+function renderToolbar(){
+  weekBtn.classList.toggle('active', viewMode==='week');
+  monthBtn.classList.toggle('active', viewMode==='month');
+  if(viewMode === 'week'){
+    const s = startOfWeek(currentDate), e = endOfWeek(currentDate);
+    rangeLabel.textContent = `${fmtDate(s,{day:'numeric',month:'long'})} – ${fmtDate(e,{day:'numeric',month:'long',year:'numeric'})}`;
+  }else{
+    rangeLabel.textContent = fmtDate(currentDate,{month:'long',year:'numeric'});
+  }
+}
+function renderStats(){
+  const dates = weekDates(currentDate);
+  let total = 0, revenue = 0, present = 0, tracked = 0;
+  const sessionMap = {};
+  dates.forEach(d => {
+    const dk = dateKey(d), sessions = seasonSessions(d);
+    ensureDayContainers(dk, sessions);
+    sessions.forEach(sk => {
+      const arr = getBookings(dk, sk);
+      total += arr.length;
+      arr.forEach(b => revenue += Number(b.pricePaid || 0));
+      sessionMap[sk] = (sessionMap[sk] || 0) + arr.length;
+      arr.forEach(b => { tracked += 1; if(b.present) present += 1; });
+    });
+  });
+  const top = Object.entries(sessionMap).sort((a,b)=>b[1]-a[1])[0]?.[0] || '—';
+  const rate = tracked ? Math.round(present/tracked*100) : 0;
+  statsEl.innerHTML = `
+    <article class="stat"><div class="l">Total copii săptămâna curentă</div><div class="v">${total}</div><div class="s">Programări confirmate</div></article>
+    <article class="stat"><div class="l">Venit estimat</div><div class="v">${money(revenue)}</div><div class="s">După aplicarea reducerilor</div></article>
+    <article class="stat"><div class="l">Top sesiune</div><div class="v">${esc(top)}</div><div class="s">Cea mai solicitată</div></article>
+    <article class="stat"><div class="l">Rata prezență</div><div class="v">${rate}%</div><div class="s">Actualizare în timp real</div></article>
+  `;
+}
+function renderCalendar(){
+  if(viewMode === 'week') renderWeek();
+  else renderMonth();
+}
+function renderWeek(){
+  const dates = weekDates(currentDate);
+  mount.innerHTML = `<section id="swipeZone" class="week-grid"></section>`;
+  const zone = $('#swipeZone');
+  dates.forEach(d => zone.appendChild(renderDayCard(d)));
+  attachSwipe(zone);
+}
+function renderDayCard(dateObj){
+  const dk = dateKey(dateObj), sessions = seasonSessions(dateObj);
+  ensureDayContainers(dk, sessions);
+  const total = sessions.reduce((sum,s)=>sum + getBookings(dk,s).length, 0);
+  const el = document.createElement('article');
+  el.className = 'day' + (isPast(dateObj) ? ' past' : '');
+  el.innerHTML = `
+    <div class="day-head">
+      <div>
+        <div class="day-name">${cap(fmtDate(dateObj,{weekday:'long'}))}</div>
+        <div class="day-date">${fmtDate(dateObj,{day:'numeric',month:'long',year:'numeric'})}</div>
+      </div>
+      <div class="badge">${total} copii</div>
+    </div>
+    <div class="session-list"></div>
+  `;
+  const list = el.querySelector('.session-list');
+  sessions.forEach(sk => list.appendChild(renderSessionCard(dateObj, sk)));
+  return el;
+}
+function renderSessionCard(dateObj, sk){
+  const dk = dateKey(dateObj);
+  const arr = getBookings(dk, sk);
+  const wait = getWaitlist(dk, sk);
+  const count = arr.length;
+  const free = CAPACITY-count;
+  const full = count >= CAPACITY;
+  const canAdd = !isPast(dateObj) && !full;
+  const pct = occupancyPct(count);
+  const color = occupancyColor(count);
+  const pickup = addMinutes(sk.split('-')[0], -30);
+  const dropoff = addMinutes(sk.split('-')[1], 30);
+
+  const el = document.createElement('section');
+  el.className = 'session' + (full ? ' full' : '');
+  el.innerHTML = `
+    <div class="session-top">
+      <div>
+        <div class="stime">${sk}</div>
+        <div class="smeta">Preluare: ${pickup} • Predare: ${dropoff}</div>
+      </div>
+      <div class="chip ${full ? 'discount' : ''}">${count}/${CAPACITY}</div>
+    </div>
+    <div class="capacity">
+      <div class="tooltip">Mai sunt ${free} locuri libere</div>
+      <div class="bar"><span style="width:${pct}%;background:${color}"></span></div>
+      <div class="cap-text">${count}/${CAPACITY} locuri ocupate</div>
+    </div>
+    <div class="session-actions no-print">
+      <button class="btn ${canAdd ? 'primary' : ''} add" ${canAdd ? '' : 'disabled'}>+ Adaugă</button>
+      ${full ? `<button class="btn wait">📋 Listă așteptare (${wait.length})</button>` : (wait.length ? `<button class="btn wait">📋 Așteptare (${wait.length})</button>` : '')}
+    </div>
+    <div class="booking-list"></div>
+  `;
+  const capWrap = el.querySelector('.capacity');
+  capWrap.addEventListener('click', () => {
+    capWrap.classList.add('show');
+    setTimeout(() => capWrap.classList.remove('show'), 1400);
+  });
+  el.querySelector('.add').addEventListener('click', () => openBookingModal(dk, sk));
+  const waitBtn = el.querySelector('.wait');
+  if(waitBtn) waitBtn.addEventListener('click', () => openWaitlistModal(dk, sk));
+
+  const bList = el.querySelector('.booking-list');
+  if(!arr.length){
+    bList.innerHTML = `<div class="hint">Nicio programare în această sesiune.</div>`;
+  }else{
+    arr.forEach(b => bList.appendChild(renderBooking(b, dk, sk)));
+  }
+  return el;
+}
+function renderBooking(b, dk, sk){
+  const hist = previousAttendances(b.childName, b.parentName);
+  const histTitle = hist.length ? hist.map(h => `${fmtDate(keyToDate(h.dk),{day:'2-digit',month:'2-digit'})} ${h.sk}`).join(' • ') : 'Fără istoric recent';
+  const el = document.createElement('article');
+  el.className = 'booking';
+  el.innerHTML = `
+    <div class="booking-head">
+      <div>
+        <div class="cname">${esc(b.childName)} ${hist.length ? `<span class="chip" title="${esc(histTitle)}">🕓 ${hist.length}</span>` : ''}</div>
+        <div class="cmeta">${b.age} ani • Părinte: ${esc(b.parentName)} • ${esc(b.phone)}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+        <span class="chip ${b.discounted ? 'discount' : ''}">${b.discounted ? 'Reducere 50%' : 'Tarif întreg'} • ${money(b.pricePaid)}</span>
+        <span class="chip ${b.present ? 'present' : 'absent'}">${b.present ? 'A venit • ' + esc(b.presentAt||'') : 'Neprezentat'}</span>
+      </div>
+    </div>
+
+    <label class="check" style="margin-top:10px">
+      <input type="checkbox" class="present" ${b.present ? 'checked' : ''}>
+      <div>
+        <div><strong>A venit</strong></div>
+        <div class="hint presentHint">${b.present ? 'Bifat la ' + esc(b.presentAt||'') : 'Bifează la sosire'}</div>
+      </div>
+    </label>
+
+    <div class="notes-box">
+      <select class="select quickSel">
+        <option value="">Sugestii notițe rapide</option>
+        ${QUICK_NOTES.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('')}
+      </select>
+      <textarea class="textarea noteInput" placeholder="Notițe administrative / medicale / comportamentale">${esc(b.notes || '')}</textarea>
+      <div class="tiny-row">${QUICK_NOTES.map(n => `<button type="button" class="tag" data-note="${esc(n)}">${esc(n)}</button>`).join('')}</div>
+    </div>
+
+    <div class="tiny-row no-print">
+      <button class="btn duplicate">Duplică programarea</button>
+      <button class="btn danger delete">Șterge</button>
+      <button class="btn wa">Trimite reminder pe WhatsApp</button>
+    </div>
+  `;
+
+  const p = el.querySelector('.present');
+  const pHint = el.querySelector('.presentHint');
+  p.addEventListener('change', () => {
+    b.present = p.checked;
+    b.presentAt = b.present ? nowTime() : '';
+    b.updatedAt = new Date().toISOString();
+    if(b.present){
+      state.attendanceHistory.push({bookingId:b.id, childName:b.childName, parentName:b.parentName, dateKey:dk, sessionKey:sk, presentAt:b.presentAt, ts:new Date().toISOString()});
+    }
+    pHint.textContent = b.present ? `Bifat la ${b.presentAt}` : 'Bifează la sosire';
+    saveAndRender();
+  });
+
+  const noteInput = el.querySelector('.noteInput');
+  noteInput.addEventListener('input', debounce(() => {
+    b.notes = noteInput.value.trim();
+    b.updatedAt = new Date().toISOString();
+    saveState();
+  }, 220));
+  noteInput.addEventListener('blur', () => {
+    b.notes = noteInput.value.trim();
+    b.updatedAt = new Date().toISOString();
+    saveAndRender();
+  });
+
+  el.querySelector('.quickSel').addEventListener('change', e => {
+    if(!e.target.value) return;
+    noteInput.value = appendNote(noteInput.value, e.target.value);
+    b.notes = noteInput.value.trim();
+    saveAndRender();
+  });
+  el.querySelectorAll('.tag').forEach(tag => {
+    tag.addEventListener('click', () => {
+      noteInput.value = appendNote(noteInput.value, tag.dataset.note || '');
+      b.notes = noteInput.value.trim();
+      saveAndRender();
+    });
+  });
+  el.querySelector('.delete').addEventListener('click', () => deleteBooking(el, b.id, dk, sk));
+  el.querySelector('.duplicate').addEventListener('click', () => openDuplicateModal(b, dk, sk));
+  el.querySelector('.wa').addEventListener('click', () => openWhatsApp(b, dk, sk));
+  return el;
+}
+function renderMonth(){
+  const cells = monthCells(currentDate);
+  const activeMonth = currentDate.getMonth();
+  mount.innerHTML = `<section id="swipeZone" class="month"></section>`;
+  const zone = $('#swipeZone');
+  cells.forEach(d => {
+    const dk = dateKey(d), sessions = seasonSessions(d);
+    ensureDayContainers(dk, sessions);
+    const total = sessions.reduce((sum,s)=>sum+getBookings(dk,s).length,0);
+    const cell = document.createElement('article');
+    cell.className = 'month-cell' + (d.getMonth() !== activeMonth ? ' outside' : '');
+    cell.innerHTML = `
+      <div class="mdate">${cap(fmtDate(d,{weekday:'short'}))} • ${d.getDate()}</div>
+      <div class="mini-list">
+        ${sessions.map(sk => {
+          const c = getBookings(dk, sk).length;
+          return `<div>${sk} • ${c}/${CAPACITY}</div><div class="mini-bar"><span style="width:${occupancyPct(c)}%;background:${occupancyColor(c)}"></span></div>`;
+        }).join('')}
+      </div>
+      <div class="hint">Total: ${total} copii</div>
+    `;
+    cell.addEventListener('click', () => { currentDate = startOfDay(d); viewMode = 'week'; saveAndRender(); });
+    zone.appendChild(cell);
+  });
+  attachSwipe(zone);
+}
+
+function attachSwipe(zone){
+  if(!zone) return;
+  zone.addEventListener('touchstart', e => { if(e.touches[0]) touchStartX = e.touches[0].clientX; }, {passive:true});
+  zone.addEventListener('touchend', e => {
+    if(touchStartX == null) return;
+    const endX = e.changedTouches[0]?.clientX ?? touchStartX;
+    const dx = endX - touchStartX;
+    if(Math.abs(dx) > 60){
+      if(dx < 0) shiftView(1);
+      else shiftView(-1);
+    }
+    touchStartX = null;
+  }, {passive:true});
+}
+
+function openModal(title, bodyHtml, footerHtml=''){
+  modalBg.innerHTML = `
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <div class="title">${title}</div>
+        </div>
+        <button class="btn mini closeModal">Închide</button>
+      </div>
+      <div class="modal-body">${bodyHtml}</div>
+      ${footerHtml ? `<div style="margin-top:12px">${footerHtml}</div>` : ''}
+    </div>
+  `;
+  modalBg.classList.add('show');
+  modalBg.querySelector('.closeModal').addEventListener('click', closeModal);
+  modalBg.addEventListener('click', onBackdropClose);
+}
+function closeModal(){
+  modalBg.classList.remove('show');
+  modalBg.innerHTML = '';
+  modalBg.removeEventListener('click', onBackdropClose);
+}
+function onBackdropClose(e){
+  if(e.target === modalBg) closeModal();
+}
+function toast(msg, actionLabel='', actionFn=null){
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `
+    <div style="flex:1">${esc(msg)}</div>
+    ${actionLabel ? `<button class="btn mini">${esc(actionLabel)}</button>` : ''}
+  `;
+  if(actionLabel && actionFn){
+    t.querySelector('button').addEventListener('click', actionFn);
+  }
+  toasts.appendChild(t);
+  setTimeout(() => {
+    t.classList.add('rem');
+    setTimeout(() => t.remove(), 180);
+  }, 4000);
+}
+function detectCapacityEvents(){
+  const dates = weekDates(currentDate);
+  const currentFull = new Set();
+  const currentLow = new Set();
+  dates.forEach(d => {
+    const dk = dateKey(d);
+    seasonSessions(d).forEach(sk => {
+      const c = getBookings(dk, sk).length;
+      const key = `${dk}|${sk}`;
+      if(c >= CAPACITY){
+        currentFull.add(key);
+        if(!lastFullWarnings.has(key)){
+          toast(`🎣 Sesiunea ${sk} din ${fmtDate(keyToDate(dk),{day:'numeric',month:'long'})} este completă!`);
+        }
+      }
+      const free = CAPACITY - c;
+      if(free > 0 && free <= 2){
+        currentLow.add(key);
+        if(!lastLowWarnings.has(key)){
+          toast(`⚠️ Mai sunt doar ${free} locuri la sesiunea ${sk}`);
+        }
+      }
+    });
+  });
+  lastFullWarnings = currentFull;
+  lastLowWarnings = currentLow;
+}
+
+function openQuickAddForToday(){
+  const dk = dateKey(currentDate);
+  const sessions = seasonSessions(currentDate);
+  ensureDayContainers(dk, sessions);
+  const target = sessions.find(sk => getBookings(dk, sk).length < CAPACITY);
+  if(!target){ toast('⚠️ Toate sesiunile de azi sunt pline.'); return; }
+  openBookingModal(dk, target);
+}
+function openBookingModal(dk, sk, waitlistMode=false){
+  const d = keyToDate(dk);
+  const canAdd = !isPast(d);
+  const full = getBookings(dk, sk).length >= CAPACITY;
+  if(!canAdd && !waitlistMode){
+    toast('Nu poți adăuga programări în zile trecute.');
+    return;
+  }
+  const modeTitle = waitlistMode ? 'Adaugă pe lista de așteptare' : 'Adaugă programare';
+  openModal(
+    `${modeTitle} • ${fmtDate(d,{day:'numeric',month:'long',year:'numeric'})} • ${sk}`,
+    `
+      <div class="grid2">
+        <div class="field"><label>Nume copil *</label><input id="fChild" class="input" placeholder="Ex: Andrei Pop"></div>
+        <div class="field"><label>Vârstă *</label><input id="fAge" class="input" type="number" min="6" max="17" placeholder="6-17"></div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>Nume părinte *</label>
+          <input id="fParent" class="input" placeholder="Ex: Maria Pop" list="parentList">
+          <datalist id="parentList"></datalist>
+        </div>
+        <div class="field"><label>Telefon *</label><input id="fPhone" class="input" placeholder="07xxxxxxxx sau +407xxxxxxxx"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Email</label><input id="fEmail" class="input" type="email" placeholder="optional"></div>
+        <div class="field"><label>Sesiune selectată</label><input class="input" value="${esc(sk)}" disabled></div>
+      </div>
+      <label class="check">
+        <input id="fSibling" type="checkbox">
+        <div>
+          <div><strong>Acest copil are un frate programat azi în altă sesiune</strong></div>
+          <div class="hint">Aplică reducere 50% automat</div>
+        </div>
+      </label>
+      <div class="hint" id="formHint" style="margin-top:10px"></div>
+    `,
+    `
+      <div class="row">
+        <button id="saveBookingBtn" class="btn primary">${waitlistMode ? 'Salvează pe lista de așteptare' : 'Salvează programarea'}</button>
+        ${!waitlistMode && full ? `<button id="saveWaitBtn" class="btn">📋 Salvează direct în listă așteptare</button>` : ''}
+      </div>
+    `
+  );
+
+  const child = $('#fChild'), age = $('#fAge'), parent = $('#fParent'), phone = $('#fPhone'), email = $('#fEmail'), sibling = $('#fSibling'), hint = $('#formHint');
+  const parentList = $('#parentList');
+
+  function refreshSuggestions(){
+    const suggestions = parentsForDay(dk, parent.value);
+    parentList.innerHTML = suggestions.map(x => `<option value="${esc(x.parentName)}" data-phone="${esc(x.phone)}"></option>`).join('');
+  }
+  refreshSuggestions();
+  parent.addEventListener('input', () => {
+    refreshSuggestions();
+    const exact = parentsForDay(dk).find(x => x.parentName.toLowerCase() === parent.value.trim().toLowerCase());
+    if(exact && !phone.value.trim()) phone.value = exact.phone;
+  });
+
+  function validateLive(){
+    child.classList.toggle('invalid', !child.value.trim());
+    age.classList.toggle('invalid', age.value && !validAge(age.value));
+    parent.classList.toggle('invalid', !parent.value.trim());
+    phone.classList.toggle('invalid', phone.value && !validPhone(phone.value));
+    email.classList.toggle('invalid', email.value && !validEmail(email.value));
+  }
+  [child,age,parent,phone,email].forEach(el => el.addEventListener('input', validateLive));
+
+  function submit(toWait=false){
+    validateLive();
+    const payload = {
+      childName: child.value.trim(),
+      age: Number(age.value),
+      parentName: parent.value.trim(),
+      phone: phone.value.trim(),
+      email: email.value.trim(),
+      siblingFlag: sibling.checked,
+      discounted: sibling.checked,
+      notes: ''
+    };
+    if(!payload.childName || !payload.parentName || !validAge(payload.age) || !validPhone(payload.phone) || !validEmail(payload.email)){
+      hint.textContent = 'Completează corect câmpurile obligatorii.';
+      hint.classList.add('error');
+      return;
+    }
+
+    if(!toWait){
+      if(sameChildSameDayElsewhere(dk, sk, payload.childName, payload.parentName) && !payload.discounted){
+        if(confirm('Același copil + același părinte există deja în aceeași zi. Ai vrea să aplici reducerea de 50% pentru frate/atelier dublu?')){
+          payload.discounted = true;
+        }
+      }
+      const arr = getBookings(dk, sk);
+      if(arr.length >= CAPACITY){
+        if(confirm('Sesiunea este plină. Vrei să salvezi în lista de așteptare?')){
+          toWait = true;
+        }else{
+          return;
+        }
+      }
+    }
+
+    if(toWait){
+      state.waitlists[dk][sk].push(createWait(payload));
+      saveAndRender();
+      closeModal();
+      toast('📋 Copilul a fost adăugat pe lista de așteptare.');
+      return;
+    }
+
+    state.bookings[dk][sk].push(createBooking(payload));
+    saveAndRender();
+    closeModal();
+    toast('✅ Programare adăugată.');
+  }
+
+  $('#saveBookingBtn').addEventListener('click', () => submit(waitlistMode));
+  const sw = $('#saveWaitBtn');
+  if(sw) sw.addEventListener('click', () => submit(true));
+}
+function openWaitlistModal(dk, sk){
+  const arr = getWaitlist(dk, sk);
+  openModal(
+    `Listă așteptare • ${fmtDate(keyToDate(dk),{day:'numeric',month:'long',year:'numeric'})} • ${sk}`,
+    `
+      <div class="row" style="margin-bottom:12px">
+        <button id="addWaitBtn" class="btn primary">+ Adaugă pe listă</button>
+      </div>
+      <div id="waitListBody">
+        ${arr.length ? arr.map(w => `
+          <article class="booking" data-id="${esc(w.id)}">
+            <div class="booking-head">
+              <div>
+                <div class="cname">${esc(w.childName)}</div>
+                <div class="cmeta">${w.age} ani • ${esc(w.parentName)} • ${esc(w.phone)}</div>
+              </div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <span class="chip ${w.discounted ? 'discount' : ''}">${w.discounted ? 'Reducere 50%' : 'Tarif întreg'}</span>
+              </div>
+            </div>
+            <div class="tiny-row">
+              <button class="btn success promote" data-id="${esc(w.id)}">Mută în sesiune</button>
+              <button class="btn danger removeWait" data-id="${esc(w.id)}">Șterge</button>
+            </div>
+          </article>
+        `).join('') : '<div class="hint">Lista de așteptare este goală.</div>'}
+      </div>
+    `
+  );
+  $('#addWaitBtn').addEventListener('click', () => openBookingModal(dk, sk, true));
+  $$('.promote').forEach(btn => btn.addEventListener('click', () => promoteWaitItem(dk, sk, btn.dataset.id)));
+  $$('.removeWait').forEach(btn => btn.addEventListener('click', () => removeWaitItem(dk, sk, btn.dataset.id)));
+}
+function promoteWaitItem(dk, sk, id){
+  const waits = getWaitlist(dk, sk);
+  const idx = waits.findIndex(x => x.id === id);
+  if(idx === -1) return;
+  if(getBookings(dk, sk).length >= CAPACITY){
+    toast('⚠️ Sesiunea este încă plină.');
+    return;
+  }
+  const item = waits.splice(idx,1)[0];
+  state.bookings[dk][sk].push(createBooking(item));
+  saveAndRender();
+  closeModal();
+  toast('✅ Copilul a fost mutat din lista de așteptare în sesiune.');
+}
+function removeWaitItem(dk, sk, id){
+  const waits = getWaitlist(dk, sk);
+  const idx = waits.findIndex(x => x.id === id);
+  if(idx === -1) return;
+  waits.splice(idx,1);
+  saveAndRender();
+  openWaitlistModal(dk, sk);
+}
+function deleteBooking(el, id, dk, sk){
+  const arr = getBookings(dk, sk);
+  const idx = arr.findIndex(x => x.id === id);
+  if(idx === -1) return;
+  if(!confirm('Ștergi această programare?')) return;
+  el.classList.add('removing');
+  setTimeout(() => {
+    arr.splice(idx,1);
+    saveAndRender();
+    const wait = getWaitlist(dk, sk);
+    if(wait.length){
+      toast('📍 S-a eliberat un loc! Vrei să muți primul copil din lista de așteptare?', 'Mută acum', () => {
+        if(getBookings(dk, sk).length < CAPACITY && getWaitlist(dk, sk).length){
+          const first = getWaitlist(dk, sk).shift();
+          state.bookings[dk][sk].push(createBooking(first));
+          saveAndRender();
+          toast('✅ Primul copil din lista de așteptare a fost mutat automat.');
+        }
+      });
+    }
+  }, 180);
+}
+function openDuplicateModal(b, dk, sk){
+  const allDays = [];
+  for(let i=0;i<21;i++){
+    const d = addDays(startOfDay(new Date()), i);
+    if(!isPast(d)) allDays.push({dk:dateKey(d), d});
+  }
+  openModal(
+    `Duplică programarea • ${esc(b.childName)}`,
+    `
+      <div class="grid2">
+        <div class="field">
+          <label>Zi nouă</label>
+          <select id="dupDate" class="select">
+            ${allDays.map(x => `<option value="${esc(x.dk)}">${esc(fmtDate(x.d,{weekday:'long',day:'numeric',month:'long',year:'numeric'}))}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Sesiune nouă</label>
+          <select id="dupSession" class="select"></select>
+        </div>
+      </div>
+      <div class="hint" id="dupHint" style="margin-top:10px"></div>
+    `,
+    `<div class="row"><button id="dupSave" class="btn primary">Duplică</button></div>`
+  );
+  const dupDate = $('#dupDate');
+  const dupSession = $('#dupSession');
+  const dupHint = $('#dupHint');
+  function refreshSessions(){
+    const d = keyToDate(dupDate.value);
+    const sessions = seasonSessions(d);
+    ensureDayContainers(dupDate.value, sessions);
+    dupSession.innerHTML = sessions.map(s => {
+      const full = getBookings(dupDate.value, s).length >= CAPACITY;
+      return `<option value="${esc(s)}" ${full ? 'disabled' : ''}>${esc(s)}${full ? ' (completă)' : ''}</option>`;
+    }).join('');
+  }
+  dupDate.addEventListener('change', refreshSessions);
+  refreshSessions();
+  $('#dupSave').addEventListener('click', () => {
+    if(!dupSession.value){
+      dupHint.textContent = 'Alege o sesiune disponibilă.';
+      dupHint.classList.add('error');
+      return;
+    }
+    const copy = createBooking({...b, id:uid(), present:false, presentAt:'', createdAt:new Date().toISOString()});
+    if(sameChildSameDayElsewhere(dupDate.value, dupSession.value, copy.childName, copy.parentName) && !copy.discounted){
+      if(confirm('Același copil există deja în aceeași zi. Aplic reducerea de 50%?')){
+        copy.discounted = true;
+        copy.pricePaid = HALF;
+      }
+    }
+    state.bookings[dupDate.value][dupSession.value].push(copy);
+    saveAndRender();
+    closeModal();
+    toast('✅ Programarea a fost duplicată.');
+  });
+}
+function openWhatsApp(b, dk, sk){
+  const msg = `Salut! Reminder pentru atelierul de pescuit de mâine.\nCopil: ${b.childName}\nData: ${fmtDate(keyToDate(dk),{day:'numeric',month:'long',year:'numeric'})}\nSesiune: ${sk}\nPreluare: ${addMinutes(sk.split('-')[0],-30)}\nPredare: ${addMinutes(sk.split('-')[1],30)}\nTarif: ${b.discounted ? '100 RON (reducere 50%)' : '200 RON'}\nNe vedem cu drag!`;
+  const phone = normalizePhone(b.phone).replace('+','');
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function exportCSV(){
+  const rows = [['data','sesiune','copil','varsta','parinte','telefon','email','pret_platit','prezenta','notite']];
+  Object.entries(state.bookings || {}).sort().forEach(([dk, sessions]) => {
+    Object.entries(sessions || {}).forEach(([sk, arr]) => {
+      (arr||[]).forEach(b => {
+        rows.push([dk, sk, b.childName, b.age, b.parentName, b.phone, b.email || '', b.pricePaid, b.present ? 'Da' : 'Nu', (b.notes||'').replace(/\n/g,' ')]);
+      });
+    });
+  });
+  downloadBlob(new Blob([rows.map(r => r.map(csvSafe).join(',')).join('\n')], {type:'text/csv;charset=utf-8;'}), `programari_atelier_${dateKey(new Date())}.csv`);
+}
+function csvSafe(v){
+  v = String(v ?? '');
+  return /[",\n]/.test(v) ? `"${v.replace(/"/g,'""')}"` : v;
+}
+function exportBackup(){
+  downloadBlob(new Blob([JSON.stringify(state, null, 2)], {type:'application/json'}), `backup_atelier_${dateKey(new Date())}.json`);
+}
+function importBackup(e){
+  const file = e.target.files?.[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const parsed = JSON.parse(reader.result);
+      if(!confirm('Importul va înlocui toate datele existente. Continui?')) return;
+      state = {
+        ...defaultState(),
+        ...parsed,
+        bookings: parsed.bookings || {},
+        waitlists: parsed.waitlists || {},
+        attendanceHistory: Array.isArray(parsed.attendanceHistory) ? parsed.attendanceHistory : [],
+        settings: {...defaultState().settings, ...(parsed.settings || {})}
+      };
+      viewMode = state.settings.viewMode || 'week';
+      currentDate = parseISODateSafe(state.settings.currentDate) || new Date();
+      applyTheme(state.settings.theme || 'light');
+      saveAndRender();
+      toast('✅ Backup importat cu succes.');
+    }catch(err){
+      alert('Fișier JSON invalid.');
+    }finally{
+      importFile.value = '';
+    }
+  };
+  reader.readAsText(file);
+}
+function resetAll(){
+  if(!confirm('Ștergi toate datele aplicației?')) return;
+  if(!confirm('Confirmi din nou resetarea completă?')) return;
+  state = defaultState();
+  viewMode = 'week';
+  currentDate = new Date();
+  applyTheme('light');
+  saveAndRender();
+  toast('🗑️ Toate datele au fost resetate.');
+}
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 500);
+}
+function exportDayPrint(d){
+  renderPrintHeader(d);
+  window.print();
+}
+function renderPrintHeader(d){
+  const dk = dateKey(d);
+  const sessions = seasonSessions(d);
+  let total = 0, revenue = 0;
+  sessions.forEach(sk => {
+    const arr = getBookings(dk, sk);
+    total += arr.length;
+    arr.forEach(b => revenue += Number(b.pricePaid || 0));
+  });
+  printHeader.innerHTML = `
+    <div style="padding:20px 0 10px;border-bottom:1px solid #ddd;margin-bottom:15px">
+      <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start">
+        <div>
+          <h2 style="margin:0 0 6px">ATELIER PESCUIT COPII</h2>
+          <div>Raport zilnic • ${fmtDate(d,{day:'numeric',month:'long',year:'numeric'})}</div>
+        </div>
+        <div style="text-align:right">
+          <div>Total copii: <strong>${total}</strong></div>
+          <div>Venit estimat: <strong>${money(revenue)}</strong></div>
+        </div>
+      </div>
+      <div style="margin-top:22px">Semnătură administrator: ______________________________</div>
+    </div>
+  `;
+}
+})();
+</script>
+</body>
+</html>
